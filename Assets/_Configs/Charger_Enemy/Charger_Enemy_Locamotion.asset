@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a793836e085d614ba45ae2a82e8b915, type: 3}
+  m_Name: Charger_Enemy_Locamotion
+  m_EditorClassIdentifier: 
+  speed: 15
+  repathHz: 6
+  stopDistance: 0.5
+  lockZ: 1
+  laneZ: 0
+  returnToSpawnOnLost: 1
+  arriveTolerance: 0.05
+  setAgentOptions: 1
+  autoTraverseOffMeshLink: 0
+  avoidance: 0
+  zeroAngularSpeed: 1
+  disableUpdateRotation: 1
+  adoptGlobalAlertOnActivate: 0
+  faceVelocityX: 0
