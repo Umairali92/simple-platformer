@@ -1,3 +1,6 @@
+Unity Version
+- Unity 6.1.4f1
+
 🎮 Controls (Prototype)
 - Move: WASD / Arrow Keys
 - Jump: Space
