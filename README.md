@@ -10,7 +10,8 @@ Create Config & Locomotion assets
 - Config: Create → Enemies → Configs
 - Locomotion: Create → Enemies → Locomotion
 
-Assets/_Configs -> contain the currently created asset files for the enemies 
+In the Scene there is EnemiesHandler Object which has the EnemyHandler Component in order to add or remove enemies from the scene make sure to update Enemy Handler so that Enemies are initialized properly.
+Assets/_Configs -> contain the currently created asset files for the enemies
 Assets/_Prefabs/Enemies -> Contains the 3 Enemies
 
 Notes :
