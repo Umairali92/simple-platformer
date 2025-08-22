@@ -26,4 +26,10 @@ public static class GameEvents
             ignoreLOS = ignoreLOS,
             persistentAggro = persistentAggro
         });
+
+    public static void ClearAll()
+    {
+        OnPlayerDied = null;
+        OnGlobalAlert = null;
+    }
 }
