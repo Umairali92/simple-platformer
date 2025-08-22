@@ -5,9 +5,9 @@ using UnityEngine.UI;
 public class AwarenessIndicatorUI : MonoBehaviour
 {
     [SerializeField] private AwarenessModule source;
-    [SerializeField] private RectTransform anchor; // optional: head bone; if null uses this transform
-    [SerializeField] private Image fillImage;      // radial or horizontal fill
-    [SerializeField] private Gradient colorByLevel; // 0..1 color gradient
+    [SerializeField] private RectTransform anchor;
+    [SerializeField] private Image fillImage;
+    [SerializeField] private Gradient colorByLevel;
     [SerializeField] private Vector3 worldOffset = new Vector3(0, 2.0f, 0);
 
     Camera _cam;

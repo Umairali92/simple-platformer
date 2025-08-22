@@ -1,17 +1,17 @@
 using UnityEngine;
 using System.Collections;
 
-[ModuleOrder(12)] // after sensing/awareness; no locomotion needed
+[ModuleOrder(12)]
 [RequireComponent(typeof(Rigidbody))]
 public class TurretEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
 {
     [Header("Configs")]
-    [SerializeField] private GunModuleConfig gun;        // fireRate, burstCount, burstInterval, bulletSpeed, bulletLifetime, flattenAimToSideView (optional)
-    [SerializeField] private BaseEnemyConfig coreOverride; // optional; falls back to ctx.Shared
+    [SerializeField] private GunModuleConfig gun;
+    [SerializeField] private BaseEnemyConfig coreOverride;
 
     [Header("Scene Refs")]
     [SerializeField] private Transform muzzle;
-    [SerializeField] private Transform barrelPivot;      // rotates to aim
+    [SerializeField] private Transform barrelPivot;
     [SerializeField] private Bullet bulletPrefab;
 
     [Header("Pooling")]
@@ -55,10 +55,7 @@ public class TurretEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
         }
     }
 
-    public void Shutdown()
-    {
-
-    }
+    public void Shutdown() { }
 
     // ------------- IEnemyModule -------------
     public void OnActiveChanged(bool active)
@@ -191,7 +188,6 @@ public class TurretEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
 
     Bullet NextBullet()
     {
-        // Simple round-robin: return next inactive; if all active, reuse index 0
         for (int i = 0; i < _pool.Length; i++)
         {
             _idx = (_idx + 1) % _pool.Length;

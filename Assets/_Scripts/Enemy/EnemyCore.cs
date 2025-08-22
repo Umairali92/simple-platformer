@@ -46,14 +46,12 @@ public class EnemyCore : MonoBehaviour, IActivatable, IResettable, IStompable
 
         _signals = new EnemySignals();
 
-        // Gather modules and sort by [ModuleOrder]
         _modules = GetComponents<IEnemyModule>();
         _inits = GetComponents<MonoBehaviour>().OfType<IEnemyInit>().ToArray();
 
         Array.Sort(_inits, CompareByOrder);
         Array.Sort(_modules, CompareByOrder);
 
-        // Validate declared inter-module requirements (optional)
         ValidateRequirements();
 
         _detector = GetComponent<PlayerDetector>();
@@ -71,15 +69,7 @@ public class EnemyCore : MonoBehaviour, IActivatable, IResettable, IStompable
             signals: _signals
         );
 
-        // Centralized init (no Awake/Start inside modules)
         foreach (var init in _inits) init.Initialize(_ctx);
-        
-        /*
-        if (_detector != null)
-        {
-            _detector.Bind(this);
-        }
-        */
         
         if (_awareness) _awareness.FullyAlerted += HandleFullyAlerted;
 
@@ -89,13 +79,11 @@ public class EnemyCore : MonoBehaviour, IActivatable, IResettable, IStompable
         SetActive(shared ? shared.startsActive : true);
         SetState(IsActive ? EnemyState.Idle : EnemyState.Inactive);
 
-        // Core listens to signals (so modules can raise without knowing Core)
         _signals.PlayerDetected += OnPlayerDetected;
         _signals.PlayerLost += OnPlayerLost;
         _signals.Alerted += HandleGlobalAlert;
 
         isInitialized = true;
-        //_signals.ResetRequested += ResetToSpawn;
     }
     void OnDestroy()
     {
@@ -109,7 +97,6 @@ public class EnemyCore : MonoBehaviour, IActivatable, IResettable, IStompable
         _signals.PlayerDetected -= OnPlayerDetected;
         _signals.PlayerLost -= OnPlayerLost;
         _signals.Alerted -= HandleGlobalAlert;
-        // Allow modules to unhook
         foreach (var init in _inits) init.Shutdown();
     }
 
@@ -151,7 +138,7 @@ public class EnemyCore : MonoBehaviour, IActivatable, IResettable, IStompable
     public void OnPlayerLost(Transform player)
     {
         if (!IsActive) return;
-        if (PersistentAggro) return; // stay aggro when globally alerted
+        if (PersistentAggro) return;
         foreach (var m in _modules) m.OnPlayerLost(player);
         SetState(EnemyState.Idle);
         ClearAlertFlags();
@@ -184,7 +171,6 @@ public class EnemyCore : MonoBehaviour, IActivatable, IResettable, IStompable
 
     void HandleFullyAlerted(Transform player)
     {
-        // If we had a pending player, now forward detection to modules
         if (_pendingPlayer == null) _pendingPlayer = player;
         if (_pendingPlayer != null)
         {

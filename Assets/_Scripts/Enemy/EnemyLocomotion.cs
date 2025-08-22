@@ -44,8 +44,8 @@ public class EnemyLocomotion : MonoBehaviour, IEnemyModule, IEnemyInit
             _agent.obstacleAvoidanceType = config.avoidance;
             if (config.zeroAngularSpeed) _agent.angularSpeed = 0f;
             if (config.disableUpdateRotation) _agent.updateRotation = false;
-            if (config.overrideStoppingDistance.HasValue)
-                _agent.stoppingDistance = config.overrideStoppingDistance.Value;
+            if (config.overrideStoppingDistance)
+                _agent.stoppingDistance = config.stoppingDistance;
         }
 
         if (config && config.lockZ)

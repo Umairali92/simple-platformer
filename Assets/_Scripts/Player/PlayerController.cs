@@ -8,12 +8,12 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
     [Range(0f, 1f)] public float airControl = 0.6f;
 
     [Header("Jump")]
-    public float jumpForce = 9f;          // initial upward velocity
-    public int maxAirJumps = 0;         // 0 = only ground jump
+    public float jumpForce = 9f;
+    public int maxAirJumps = 0;
 
     [Header("Better Jump Feel")]
-    public float coyoteTime = 0.12f;      // how long after leaving ground you can still jump
-    public float jumpBuffer = 0.12f;      // how long before landing a jump press is buffered
+    public float coyoteTime = 0.12f;
+    public float jumpBuffer = 0.12f;
     [Tooltip("Multiplier for gravity while falling (>1 = faster fall).")]
     public float fallMultiplier = 2.2f;
     [Tooltip("Multiplier for gravity when jump is released early.")]
@@ -51,8 +51,7 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
         _rb = GetComponent<Rigidbody>();
         _col = GetComponent<CapsuleCollider>();
 
-        // Rigidbody setup for responsive 2D-in-3D
-        _rb.useGravity = true; // we will *amplify* gravity below
+        _rb.useGravity = true;
         _rb.interpolation = RigidbodyInterpolation.Interpolate;
         _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         _rb.freezeRotation = true;
@@ -95,15 +94,13 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
         if (Input.GetKeyUp(KeyCode.Space))
         {
             _jumpHeld = false;
-            // Optional immediate jump cut for extra snappiness
             if (_rb.linearVelocity.y > 0f && jumpCutMultiplier < 1f)
             {
                 var v = _rb.linearVelocity;
-                v.y *= jumpCutMultiplier; // chop upward speed on release
+                v.y *= jumpCutMultiplier;
                 _rb.linearVelocity = v;
             }
         }
-        //For Debugging
         _vel = _rb.linearVelocity;
     }
 
@@ -112,18 +109,15 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
         float dt = Time.fixedDeltaTime;
         GroundCheck();
 
-        // Timers
         if (!_isGrounded) _coyoteTimer -= dt; else _coyoteTimer = coyoteTime;
         if (_jumpBufferTimer > 0f) _jumpBufferTimer -= dt;
 
-        // Consume buffered jump if allowed
         if (_jumpBufferTimer > 0f && CanJump())
         {
             DoJump();
             _jumpBufferTimer = 0f;
         }
 
-        // Horizontal move (X in side-view)
         float h = Input.GetAxisRaw("Horizontal");
         Vector3 vel = _rb.linearVelocity;
 
@@ -131,15 +125,13 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
         float targetX = h * moveSpeed;
         vel.x = Mathf.Lerp(vel.x, targetX, control);
 
-        // Z lane lock
         if (lockToLaneZ) vel.z = 0f;
 
-        // Better gravity
-        if (vel.y < 0f) // falling
+        if (vel.y < 0f)
         {
             vel.y += Physics.gravity.y * (fallMultiplier - 1f) * dt;
         }
-        else if (vel.y > 0f && !_jumpHeld) // rising but jump released
+        else if (vel.y > 0f && !_jumpHeld)
         {
             vel.y += Physics.gravity.y * (lowJumpMultiplier - 1f) * dt;
         }
@@ -153,7 +145,6 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
 
     void GroundCheck()
     {
-        // SphereCast using capsule shape
         Vector3 center = _rb.position + Vector3.up * (_col.radius + groundCheckOffset);
         float castDist = (_col.height * 0.5f) - _col.radius + groundCheckOffset;
 
@@ -173,7 +164,6 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
             _airJumpsUsed = 0;
             if (!wasGrounded && _rb.linearVelocity.y < 0f)
             {
-                // small snap to avoid tiny sinking after landing (optional)
                 var v = _rb.linearVelocity; v.y = 0f; _rb.linearVelocity = v;
             }
         }
@@ -188,7 +178,7 @@ public class PlayerController : MonoBehaviour, IPlayerKinematics
     void DoJump()
     {
         var v = _rb.linearVelocity;
-        if (v.y < 0f) v.y = 0f; // clear down velocity for crisp jumps
+        if (v.y < 0f) v.y = 0f;
         v.y = jumpForce;
         _rb.linearVelocity = v;
 

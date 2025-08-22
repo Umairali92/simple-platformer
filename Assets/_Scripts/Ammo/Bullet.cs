@@ -11,9 +11,9 @@ public class Bullet : MonoBehaviour
 
     [Header("Filtering")]
     [Tooltip("Only these layers will register as hits.")]
-    [SerializeField] private LayerMask _hitLayers = ~0; // Everything by default
+    [SerializeField] private LayerMask _hitLayers = ~0;
     [Tooltip("Ignore collisions with objects tagged the same as this (e.g. the shooter). Leave blank to ignore none.")]
-    [SerializeField] private string _ignoreTag = ""; // e.g. "Enemy"
+    [SerializeField] private string _ignoreTag = "";
 
     private float _elapsedLifetime;
     private float _laneZ;
@@ -30,7 +30,6 @@ public class Bullet : MonoBehaviour
         _elapsedLifetime = 0f;
         gameObject.SetActive(true);
 
-        // If non-kinematic, use physics velocity
         if (!_rb.isKinematic)
         {
             _rb.linearVelocity = _dir * _speed;
@@ -42,15 +41,14 @@ public class Bullet : MonoBehaviour
         _rb = GetComponent<Rigidbody>();
         _col = GetComponent<Collider>();
 
-        // Auto-configure based on kinematic setting
         if (_rb.isKinematic)
         {
-            _col.isTrigger = true;             // use triggers for kinematic bullets
+            _col.isTrigger = true;
             _rb.interpolation = RigidbodyInterpolation.Interpolate;
         }
         else
         {
-            _col.isTrigger = false;            // use collisions for dynamic bullets
+            _col.isTrigger = false;
             _rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         }
     }
@@ -78,19 +76,17 @@ public class Bullet : MonoBehaviour
             Deactivate();
     }
 
-    // === Trigger path (kinematic) ===
     private void OnTriggerEnter(Collider other)
     {
-        if (!_rb.isKinematic) return; // ignore if we're using collision path
+        if (!_rb.isKinematic) return;
         if (!IsValidHit(other.gameObject)) return;
 
         HandleHit(other.gameObject, contactPoint: transform.position);
     }
 
-    // === Collision path (dynamic) ===
     private void OnCollisionEnter(Collision collision)
     {
-        if (_rb.isKinematic) return; // ignore if we're using trigger path
+        if (_rb.isKinematic) return;
         if (!IsValidHit(collision.gameObject)) return;
 
         Vector3 hitPoint = collision.contacts.Length > 0 ? collision.contacts[0].point : transform.position;
@@ -99,16 +95,13 @@ public class Bullet : MonoBehaviour
 
     private bool IsValidHit(GameObject other)
     {
-        // Ignore self-tag (e.g., shooter’s tag) if provided
         if (!string.IsNullOrEmpty(_ignoreTag) && other.CompareTag(_ignoreTag))
             return false;
 
-        // Layer mask check
         int otherLayerMask = 1 << other.layer;
         if ((_hitLayers.value & otherLayerMask) == 0)
             return false;
 
-        // Ignore our own collider
         if (other == this.gameObject)
             return false;
 
@@ -119,19 +112,16 @@ public class Bullet : MonoBehaviour
     {
         Debug.Log($"Bullet hit: {hitObject.name} (layer: {LayerMask.LayerToName(hitObject.layer)}) at {contactPoint}");
 
-        // Example: special-case Player, but we still detect everything else
         if (hitObject.CompareTag("Player"))
         {
             GameEvents.RaisePlayerDied();
         }
         // TODO: Add other reactions here (damage enemies, props, shields, etc.)
-
         Deactivate();
     }
 
     private void Deactivate()
     {
-        // Stop physics velocity to avoid post-disable movement if using pooling
         if (_rb && !_rb.isKinematic) _rb.linearVelocity = Vector3.zero;
         gameObject.SetActive(false);
     }

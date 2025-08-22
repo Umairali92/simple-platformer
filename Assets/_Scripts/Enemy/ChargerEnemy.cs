@@ -1,7 +1,7 @@
 ﻿using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
 
-[ModuleOrder(12)] // after locomotion (10), before attack/shoot modules
+[ModuleOrder(12)]
 [RequireComponent(typeof(CapsuleCollider))]
 [RequireComponent(typeof(Rigidbody))]
 public class ChargerEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
@@ -9,13 +9,12 @@ public class ChargerEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
     [Header("Kill Settings")]
     [Tooltip("If true, also kill via body trigger collisions (requires a trigger collider).")]
     [SerializeField] private bool killOnTrigger = true;
-    //[SerializeField] private float _killDistance = 0.75f;
 
     [SerializeField] private Rigidbody _rb;
 
     // --- runtime ---
     private EnemyContext _ctx;
-    private EnemyLocomotion _locomotion;   // your shared NavMesh locomotion module
+    private EnemyLocomotion _locomotion;
     private Transform _player;
     private bool _active;
 
@@ -56,7 +55,7 @@ public class ChargerEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
 
     public void OnPlayerLost(Transform player)
     {
-        if (_ctx.Core.PersistentAggro) return;   // stay aggressive while globally alerted
+        if (_ctx.Core.PersistentAggro) return;
         if (_player == player)
         {
             _player = null;
@@ -66,7 +65,6 @@ public class ChargerEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
 
     public void OnAlerted(GameEvents.AlertMessage msg)
     {
-        // Adopt the target and boost speed while the alert is active
         _player = msg.target ? msg.target : _player;
     }
 
@@ -80,29 +78,7 @@ public class ChargerEnemy : MonoBehaviour, IEnemyModule, IEnemyInit
         if (!_active || !_player) return;
 
         distanceToPlayer = DistanceXZ(transform.position, _player.position);
-        /*
-        if (distanceToPlayer <= _killDistance)
-        {
-            if (_player.gameObject.activeInHierarchy)
-            {
-                GameEvents.RaisePlayerDied();
-            }
-        }
-        */
     }
-    /*
-    void OnTriggerEnter(Collider other)
-    {
-        if (!killOnTrigger) return;
-        if (other.CompareTag("Player"))
-        {
-            if (other.gameObject.activeInHierarchy)
-            {
-                GameEvents.RaisePlayerDied();
-            }
-        }
-    }
-    */
 
     private void OnCollisionEnter(Collision collision)
     {
